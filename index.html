@@ -359,29 +359,30 @@
             border-top: 1px solid var(--border-color);
         }
 
-        /* 3D Paper Cut Bar Chart (Tone-matched) */
+        /* 3D Cyan-Blue Bar Chart (Full-width, 3D Bevel & Shadow) */
         .chart-paper-container {
             position: relative;
             background: #0d172c;
-            border-radius: 10px;
+            border-radius: 12px;
             border: 1px solid var(--border-color);
-            padding: 24px 10px 0 10px;
+            padding: 24px 12px 12px 12px;
             margin-top: 8px;
             overflow: hidden;
         }
         .chart-paper-bars {
             display: flex;
             align-items: flex-end;
-            justify-content: space-around;
-            height: 190px;
-            padding-bottom: 24px;
+            justify-content: space-between;
+            height: 210px;
+            padding-bottom: 8px;
             position: relative;
-            z-index: 2;
+            border-bottom: 2px solid #1e2e4a;
+            box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.5);
+            gap: 6px;
         }
         .paper-pillar {
             flex: 1;
-            max-width: 42px;
-            margin: 0 4px;
+            max-width: 72px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -391,9 +392,9 @@
         }
         .paper-body {
             width: 100%;
-            background: linear-gradient(90deg, #cfd8dc 0%, #ffffff 32%, #f8fafc 68%, #b0bec5 100%);
-            border-radius: 4px 4px 0 0;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.45), -2px 0 6px rgba(0, 0, 0, 0.25);
+            background: linear-gradient(90deg, #0284c7 0%, #38bdf8 30%, #7dd3fc 65%, #0369a1 100%);
+            border-radius: 6px 6px 0 0;
+            box-shadow: 0 8px 16px rgba(2, 132, 199, 0.3), -2px 0 6px rgba(0, 0, 0, 0.3);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -403,49 +404,27 @@
             position: relative;
         }
         .paper-val {
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 800;
-            color: #0f172a;
-            letter-spacing: -0.3px;
+            color: #042f2e;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
         }
-        .paper-tab {
-            width: 100%;
-            height: 22px;
-            background: #1e293b;
-            color: var(--accent-blue);
-            font-size: 10.5px;
-            font-weight: 700;
+        /* Year Labels Row (Single, Clean, Full Thai Year) */
+        .chart-paper-labels {
             display: flex;
             align-items: center;
-            justify-content: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 0 0 3px 3px;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            justify-content: space-between;
+            padding-top: 8px;
+            gap: 6px;
         }
-        /* Slit Pocket Shelf at bottom */
-        .chart-paper-shelf {
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 26px;
-            background: linear-gradient(180deg, #090f1d 0%, #060a14 100%);
-            border-top: 1px solid #1e2e4a;
-            box-shadow: inset 0 6px 8px rgba(0, 0, 0, 0.6);
-            z-index: 3;
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            padding: 0 10px;
-        }
-        .shelf-label {
+        .year-full-label {
             flex: 1;
-            max-width: 42px;
-            margin: 0 4px;
+            max-width: 72px;
             text-align: center;
-            font-size: 10px;
-            font-weight: 600;
-            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: 0.2px;
         }
 
 </style>
@@ -517,7 +496,7 @@
                 </div>
                 <div class="chart-paper-container">
                     <div class="chart-paper-bars" id="yearlyPillars"></div>
-                    <div class="chart-paper-shelf" id="yearlyShelf"></div>
+                    <div class="chart-paper-labels" id="yearlyLabels"></div>
                 </div>
             </div>
         </section>
@@ -1065,11 +1044,11 @@
 
         function renderChart() {
             const container = document.getElementById('yearlyPillars');
-            const shelf = document.getElementById('yearlyShelf');
-            if (!container || !shelf) return;
+            const labelsContainer = document.getElementById('yearlyLabels');
+            if (!container || !labelsContainer) return;
 
             container.innerHTML = '';
-            shelf.innerHTML = '';
+            labelsContainer.innerHTML = '';
 
             const yrCounts = {};
             allRecords.filter(r => r.category === 'ชัก').forEach(r => {
@@ -1080,30 +1059,28 @@
             const years = Object.keys(yrCounts).sort();
             const counts = years.map(y => yrCounts[y]);
             const maxVal = Math.max(...counts, 1);
-            const maxAvailableHeight = 150; // pixels max height
+            const maxAvailableHeight = 175; // bar height limit
 
             years.forEach(y => {
                 const cnt = yrCounts[y];
                 const thaiYr = parseInt(y) < 2400 ? parseInt(y) + 543 : y;
-                const shortYr = "'" + String(thaiYr).slice(-2);
-                const heightPx = Math.max(28, Math.round((cnt / maxVal) * maxAvailableHeight));
+                const heightPx = Math.max(30, Math.round((cnt / maxVal) * maxAvailableHeight));
 
-                // เสาแท่ง 3D
+                // เสาแท่ง 3D โทนฟ้าไล่เฉด bevel
                 const pillar = document.createElement('div');
                 pillar.className = 'paper-pillar';
                 pillar.innerHTML = `
                     <div class="paper-body" style="height: ${heightPx}px;" title="ปี พ.ศ. ${thaiYr}: ชัก ${cnt} ครั้ง">
                         <span class="paper-val">${cnt}</span>
                     </div>
-                    <div class="paper-tab">${shortYr}</div>
                 `;
                 container.appendChild(pillar);
 
-                // ป้ายปีใต้ร่อง Pocket
+                // แถบปี พ.ศ. เต็มตัวใหญ่เพียงแถวเดียว ไม่ซ้ำซ้อน
                 const label = document.createElement('div');
-                label.className = 'shelf-label';
-                label.innerText = shortYr;
-                shelf.appendChild(label);
+                label.className = 'year-full-label';
+                label.innerText = thaiYr;
+                labelsContainer.appendChild(label);
             });
         }
 
