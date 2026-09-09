@@ -1,2 +1,3 @@
-# Min-Seizure-Tracker
-Seizure and medication dashboard for Min
+# daily-health-log-98
+
+Personal health tracking and metrics dashboard
