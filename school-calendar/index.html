@@ -8,6 +8,45 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    /* Share Action Bar */
+    .share-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: -10px 0 24px 0;
+    }
+
+    .btn-share {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn-share:hover {
+      transform: translateY(-2px);
+      opacity: 0.9;
+    }
+
+    /* LINE Brand Button */
+    .btn-line {
+      background-color: #06c755;
+      color: #ffffff;
+    }
+
+    /* Copy Link Button */
+    .btn-copy {
+      background-color: var(--card-bg);
+      border-color: var(--border);
+      color: var(--text);
+    }
     :root {
       --bg: #0f172a;
       --card-bg: #1e293b;
@@ -198,7 +237,15 @@
       <h1>📅 ปฏิทินงาน & กิจกรรม ปีการศึกษา 2569</h1>
       <p>กำหนดการวัดผล เข้าค่าย และกิจกรรมสำคัญ (ก.ย. - ธ.ค. 2569)</p>
     </header>
-
+<!-- Share Actions -->
+    <div class="share-container">
+      <button class="btn-share btn-line" onclick="shareToLine()">
+        💬 แชร์เข้า LINE
+      </button>
+      <button class="btn-share btn-copy" id="copyBtn" onclick="copyDashboardUrl()">
+        🔗 คัดลอกลิงก์
+      </button>
+    </div>
     <!-- Summary Stats -->
     <section class="summary-grid">
       <div class="summary-card">
@@ -325,6 +372,28 @@
   </div>
 
   <script>
+    function shareToLine() {
+      const pageUrl = window.location.href;
+      const shareTitle = "📅 เช็กกำหนดการสอบ & ปฏิทินกิจกรรมโรงเรียน 2569:";
+      const lineUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(shareTitle)}`;
+      
+      window.open(lineUrl, '_blank', 'width=500,height=500');
+    }
+
+    function copyDashboardUrl() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const copyBtn = document.getElementById('copyBtn');
+        const originalText = copyBtn.innerHTML;
+        
+        copyBtn.innerHTML = '✅ คัดลอกแล้ว!';
+        copyBtn.style.borderColor = '#10b981';
+        
+        setTimeout(() => {
+          copyBtn.innerHTML = originalText;
+          copyBtn.style.borderColor = 'var(--border)';
+        }, 2000);
+      });
+    }
     function filterEvents(category) {
       // Toggle active button class
       const buttons = document.querySelectorAll('.filter-btn');
