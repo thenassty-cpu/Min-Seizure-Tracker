@@ -239,7 +239,7 @@
     </header>
 <!-- Share Actions -->
     <div class="share-container">
-      <button class="btn-share btn-line" onclick="shareToLine()">
+      <button class="btn-share btn-line" onclick="">
         💬 แชร์เข้า LINE
       </button>
       <button class="btn-share btn-copy" id="copyBtn" onclick="copyDashboardUrl()">
@@ -376,15 +376,26 @@
   const pageUrl = window.location.href;
   const message = `📅 เช็กกำหนดการสอบ & ปฏิทินกิจกรรมโรงเรียน 2569:\n${pageUrl}`;
   
-  // ตรวจจับว่าเป็นอุปกรณ์มือถือหรือไม่
+  // ตรวจสอบว่าเป็นมือถือ/แท็บเล็ตหรือไม่
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
   if (isMobile) {
-    // บนมือถือ: ใช้ Universal Share Scheme
+    // บนมือถือ: เปิดเข้าแอป LINE ไปเลือกห้องแชตได้ทันที
     window.location.href = `https://line.me/R/msg/text/?${encodeURIComponent(message)}`;
   } else {
-    // บนคอมพิวเตอร์: สั่งเปิดโปรแกรม LINE PC โดยตรง
-    window.location.href = `line://msg/text/${encodeURIComponent(message)}`;
+    // บนคอม PC: คัดลอกข้อความพร้อมลิงก์ลงคลิปบอร์ด เพื่อให้ไปกด Ctrl+V วางใน LINE PC ได้เลย
+    navigator.clipboard.writeText(message).then(() => {
+      const lineBtn = document.querySelector('.btn-line');
+      const originalText = lineBtn.innerHTML;
+      
+      lineBtn.innerHTML = '✅ ก๊อปปี้แล้ว! วางใน LINE ได้เลย';
+      
+      setTimeout(() => {
+        lineBtn.innerHTML = originalText;
+      }, 2500);
+    }).catch(() => {
+      alert("กรุณาคัดลอกลิงก์เพื่อนำไปวางใน LINE PC ครับ");
+    });
   }
 }
 
