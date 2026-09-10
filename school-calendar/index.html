@@ -373,12 +373,20 @@
 
   <script>
     function shareToLine() {
-      const pageUrl = window.location.href;
-      const shareTitle = "📅 เช็กกำหนดการสอบ & ปฏิทินกิจกรรมโรงเรียน 2569:";
-      const lineUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(shareTitle)}`;
-      
-      window.open(lineUrl, '_blank', 'width=500,height=500');
-    }
+  const pageUrl = window.location.href;
+  const message = `📅 เช็กกำหนดการสอบ & ปฏิทินกิจกรรมโรงเรียน 2569:\n${pageUrl}`;
+  
+  // ตรวจจับว่าเป็นอุปกรณ์มือถือหรือไม่
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+  if (isMobile) {
+    // บนมือถือ: ใช้ Universal Share Scheme
+    window.location.href = `https://line.me/R/msg/text/?${encodeURIComponent(message)}`;
+  } else {
+    // บนคอมพิวเตอร์: สั่งเปิดโปรแกรม LINE PC โดยตรง
+    window.location.href = `line://msg/text/${encodeURIComponent(message)}`;
+  }
+}
 
     function copyDashboardUrl() {
       navigator.clipboard.writeText(window.location.href).then(() => {
